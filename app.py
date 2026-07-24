@@ -9,10 +9,9 @@ db = mysql.connector.connect(
     host="yamanote.proxy.rlwy.net",
     port=54195,
     user="root",
-    password="YOUR_RAILWAY_PASSWORD",
+    password="lAimmTbnfyytLAqIHzfIfjAcxJelcNux",
     database="railway"
 )
-
 @app.route("/")
 def home():
     return "Bike QR Attendance API Running!"
