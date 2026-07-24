@@ -6,10 +6,10 @@ app = Flask(__name__)
 CORS(app)
 
 db = mysql.connector.connect(
-    host="mysql.railway.internal",
-    port=3306,
+    host="yamanote.proxy.rlwy.net",
+    port=54195,
     user="root",
-    password="lAimmTbnfyytLAqIHzfIfjAcxJelcNux",
+    password="YOUR_RAILWAY_PASSWORD",
     database="railway"
 )
 
