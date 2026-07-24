@@ -6,10 +6,11 @@ app = Flask(__name__)
 CORS(app)
 
 db = mysql.connector.connect(
-    host="localhost",
+    host="mysql.railway.internal",
+    port=3306,
     user="root",
-    password="",
-    database="bike_qr_db"
+    password="lAimmTbnfyytLAqIHzfIfjAcxJelcNux",
+    database="railway"
 )
 
 @app.route("/")
