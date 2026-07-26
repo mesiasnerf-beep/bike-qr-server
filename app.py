@@ -7,14 +7,20 @@ app = Flask(__name__)
 CORS(app)
 
 # ---------- DATABASE ----------
-def get_db():
-    return mysql.connector.connect(
+# Railway MySQL connection
+try:
+    db = mysql.connector.connect(
         host="yamanote.proxy.rlwy.net",
         port=54195,
         user="root",
         password="lAimmTbnfyytLAqIHzfIfjAcxJelcNux",
         database="railway"
     )
+    print("✅ Connected to MySQL")
+except Exception as e:
+    print("❌ Database connection failed:")
+    print(e)
+    raise
 
 
 # ---------- HOME ----------
