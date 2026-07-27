@@ -204,6 +204,112 @@ def login():
             "error": str(e)
         }), 500
 
+# ---------- SCAN QR ----------
+@app.route("/scan", methods=["POST"])
+def scan_qr():
+
+    try:
+        data = request.json
+        lrn = data.get("lrn")
+
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+
+        # Find rider
+        cursor.execute(
+            "SELECT * FROM riders WHERE lrn=%s",
+            (lrn,)
+        )
+
+        rider = cursor.fetchone()
+
+        if rider is None:
+            cursor.close()
+            db.close()
+
+            return jsonify({
+                "message": "Rider not found"
+            }), 404
+
+        # Today's date
+        from datetime import date, datetime
+
+        today = date.today()
+
+        # Check today's attendance
+        cursor.execute(
+            """
+            SELECT *
+            FROM attendance
+            WHERE lrn=%s
+            AND date=%s
+            """,
+            (lrn, today)
+        )
+
+        attendance = cursor.fetchone()
+
+        current_time = datetime.now().strftime("%I:%M %p")
+
+        if attendance is None:
+
+            cursor.execute(
+                """
+                INSERT INTO attendance
+                (lrn, fullName, date, timeIn)
+                VALUES (%s,%s,%s,%s)
+                """,
+                (
+                    rider["lrn"],
+                    rider["fullName"],
+                    today,
+                    current_time,
+                ),
+            )
+
+            db.commit()
+
+            action = "TIME IN"
+
+        elif attendance["timeOut"] is None or attendance["timeOut"] == "":
+
+            cursor.execute(
+                """
+                UPDATE attendance
+                SET timeOut=%s
+                WHERE id=%s
+                """,
+                (
+                    current_time,
+                    attendance["id"],
+                ),
+            )
+
+            db.commit()
+
+            action = "TIME OUT"
+
+        else:
+
+            action = "ALREADY COMPLETED"
+
+        cursor.close()
+        db.close()
+
+        return jsonify({
+            "action": action,
+            "rider": {
+                "fullName": rider["fullName"],
+                "gradeSection": rider["gradeSection"],
+                "lrn": rider["lrn"],
+                "bikeType": rider["bikeType"]
+            }
+        })
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 if __name__ == "__main__":
     app.run(
