@@ -39,7 +39,7 @@ def home():
 def get_riders():
     try:
         db = get_db()
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(dictionary=True, buffered=True)
 
         cursor.execute("SELECT * FROM riders")
         riders = cursor.fetchall()
@@ -66,7 +66,7 @@ def get_riders():
 def dashboard():
     try:
         db = get_db()
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(dictionary=True, buffered=True)
 
         # Total Riders
         cursor.execute("SELECT COUNT(*) AS totalRiders FROM riders")
@@ -172,7 +172,7 @@ def login():
         password = data.get("password")
 
         db = get_db()
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(dictionary=True, buffered=True)
 
         sql = """
         SELECT
@@ -219,7 +219,7 @@ def scan_qr():
         lrn = data.get("lrn")
 
         db = get_db()
-        cursor = db.cursor(dictionary=True)
+        cursor = db.cursor(dictionary=True, buffered=True)
 
         # Find rider
         cursor.execute(
@@ -313,6 +313,10 @@ def scan_qr():
         })
 
     except Exception as e:
+        import traceback
+
+        traceback.print_exc()
+        
         return jsonify({
             "error": str(e)
         }), 500
