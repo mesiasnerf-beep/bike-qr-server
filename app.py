@@ -341,6 +341,14 @@ def get_attendance():
 
         attendance = cursor.fetchall()
 
+        # Convert TIME fields to strings
+        for row in attendance:
+            if row["timeIn"] is not None:
+                row["timeIn"] = str(row["timeIn"])
+
+            if row["timeOut"] is not None:
+                row["timeOut"] = str(row["timeOut"])    
+
         cursor.close()
         db.close()
 
