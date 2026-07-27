@@ -50,6 +50,12 @@ def get_riders():
         return jsonify(riders)
 
     except Exception as e:
+        import traceback
+
+        print("========== SCAN ERROR ==========")
+        traceback.print_exc()
+        print("===============================")
+        
         return jsonify({
             "error": str(e)
         }), 500
