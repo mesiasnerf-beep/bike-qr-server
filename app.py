@@ -325,6 +325,32 @@ def scan_qr():
             "error": str(e)
         }), 500
 
+    # ---------- GET ATTENDANCE ----------
+@app.route("/attendance", methods=["GET"])
+def get_attendance():
+
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True, buffered=True)
+
+        cursor.execute("""
+            SELECT *
+            FROM attendance
+            ORDER BY id DESC
+        """)
+
+        attendance = cursor.fetchall()
+
+        cursor.close()
+        db.close()
+
+        return jsonify(attendance)
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
