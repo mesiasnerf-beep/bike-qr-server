@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 import os
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 app = Flask(__name__)
 CORS(app)
@@ -238,9 +240,11 @@ def scan_qr():
             }), 404
 
         # Today's date
-        from datetime import date, datetime
+        now = datetime.now(ZoneInfo("Asia/Manila"))
 
-        today = date.today()
+        today = now.date()
+
+        current_time = now.strftime("%H:%M:%S")
 
         # Check today's attendance
         cursor.execute(
