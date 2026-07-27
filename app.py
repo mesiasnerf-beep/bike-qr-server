@@ -259,7 +259,7 @@ def scan_qr():
 
         attendance = cursor.fetchone()
 
-        current_time = datetime.now().strftime("%I:%M %p")
+        current_time = datetime.now().strftime("%H:%M:%S")
 
         if attendance is None:
 
