@@ -13,7 +13,7 @@ def get_db():
             host="yamanote.proxy.rlwy.net",
             port=54195,
             user="root",
-            password="lAimmTbnfyytLAqIHzfIfjAcxJelcNux",  # <-- Replace with your real password
+            password="lAimmTbnfyytLAqIHzfIfjAcxJelcNux",  # Your Railway MySQL password
             database="railway"
         )
         print("✅ Connected to MySQL")
@@ -48,6 +48,45 @@ def get_riders():
         db.close()
 
         return jsonify(riders)
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+
+# ---------- DASHBOARD SUMMARY ----------
+@app.route("/dashboard", methods=["GET"])
+def dashboard():
+    try:
+        db = get_db()
+        cursor = db.cursor(dictionary=True)
+
+        # Total Riders
+        cursor.execute("SELECT COUNT(*) AS totalRiders FROM riders")
+        total_riders = cursor.fetchone()["totalRiders"]
+
+        # Total Time In
+        cursor.execute("SELECT COUNT(*) AS totalTimeIn FROM attendance WHERE timeIn IS NOT NULL")
+        total_time_in = cursor.fetchone()["totalTimeIn"]
+
+        # Total Time Out
+        cursor.execute("""
+            SELECT COUNT(*) AS totalTimeOut
+            FROM attendance
+            WHERE timeOut IS NOT NULL
+            AND timeOut <> ''
+        """)
+        total_time_out = cursor.fetchone()["totalTimeOut"]
+
+        cursor.close()
+        db.close()
+
+        return jsonify({
+            "totalRiders": total_riders,
+            "totalTimeIn": total_time_in,
+            "totalTimeOut": total_time_out
+        })
 
     except Exception as e:
         return jsonify({
