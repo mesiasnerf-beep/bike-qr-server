@@ -341,6 +341,9 @@ def get_attendance():
 
         # Convert TIME fields to strings
         for row in attendance:
+            if row["date"] is not None:
+                row["date"] = row["date"].strftime("%Y-%m-%d")
+                
             if row["timeIn"] is not None:
                 row["timeIn"] = str(row["timeIn"])
 
