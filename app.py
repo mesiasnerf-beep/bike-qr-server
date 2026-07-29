@@ -70,21 +70,36 @@ def dashboard():
         db = get_db()
         cursor = db.cursor(dictionary=True, buffered=True)
 
+        # Today's date in Philippine time
+        today = datetime.now(
+            ZoneInfo("Asia/Manila")
+        ).date()
+
         # Total Riders
-        cursor.execute("SELECT COUNT(*) AS totalRiders FROM riders")
+        cursor.execute("""
+            SELECT COUNT(*) AS totalRiders
+            FROM riders
+        """)
         total_riders = cursor.fetchone()["totalRiders"]
 
-        # Total Time In
-        cursor.execute("SELECT COUNT(*) AS totalTimeIn FROM attendance WHERE timeIn IS NOT NULL")
+        # Today's Time In
+        cursor.execute("""
+            SELECT COUNT(*) AS totalTimeIn
+            FROM attendance
+            WHERE date = %s
+            AND timeIn IS NOT NULL
+            AND timeIn <> ''
+        """, (today,))
         total_time_in = cursor.fetchone()["totalTimeIn"]
 
-        # Total Time Out
+        # Today's Time Out
         cursor.execute("""
             SELECT COUNT(*) AS totalTimeOut
             FROM attendance
-            WHERE timeOut IS NOT NULL
+            WHERE date = %s
+            AND timeOut IS NOT NULL
             AND timeOut <> ''
-        """)
+        """, (today,))
         total_time_out = cursor.fetchone()["totalTimeOut"]
 
         cursor.close()
@@ -99,8 +114,7 @@ def dashboard():
     except Exception as e:
         return jsonify({
             "error": str(e)
-        }), 500
-
+        }), 500      
 
 # ---------- REGISTER ----------
 @app.route("/register", methods=["POST"])
@@ -313,7 +327,7 @@ def scan_qr():
                 "bikeType": rider["bikeType"]
             }
         })
-
+    
     except Exception as e:
         import traceback
 
@@ -323,7 +337,8 @@ def scan_qr():
             "error": str(e)
         }), 500
 
-    # ---------- GET ATTENDANCE ----------
+
+# ---------- GET ATTENDANCE ----------
 @app.route("/attendance", methods=["GET"])
 def get_attendance():
 
